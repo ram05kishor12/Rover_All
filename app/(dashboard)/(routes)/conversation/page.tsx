@@ -2,19 +2,20 @@
 import { Heading } from "@/components/Heading";
 import { MessageSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { formSchema } from "./constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import OpenAI from "openai";
+import { ChatCompletionRequestMessage } from "openai";
 
 const ConversationPage = () => { 
-    const [message, setMessage] = useState<OpenAI.Chat.ChatCompletion[]>([]);
+    const [message, setMessage] = useState<ChatCompletionRequestMessage[]>([]);
     const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -26,7 +27,7 @@ const ConversationPage = () => {
     const isLoading = form.formState.isSubmitting;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try{
-          const userMessage :OpenAI.Chat.ChatCompletion[]= [{
+          const userMessage :ChatCompletionRequestMessage[]= [{
             role : "user",
             content : values.prompt,
           }];
