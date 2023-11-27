@@ -1,3 +1,4 @@
+
 "use client";
 import { Heading } from "@/components/Heading";
 import { MessageSquare } from "lucide-react";
@@ -12,10 +13,10 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { ChatCompletionRequestMessage } from "openai";
+import OpenAi from "openai";
 
 const ConversationPage = () => { 
-    const [message, setMessage] = useState<ChatCompletionRequestMessage[]>([]);
+    const [message, setMessage] = useState<OpenAi.ChatCompletionMessage[]>([]);
     const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -27,13 +28,13 @@ const ConversationPage = () => {
     const isLoading = form.formState.isSubmitting;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try{
-          const userMessage :ChatCompletionRequestMessage[]= [{
+          const userMessage :OpenAi.ChatCompletionMessageParam[]= [{
             role : "user",
             content : values.prompt,
           }];
           const newMessage = [...message, userMessage];
 
-          const response = await axios.post("/api/conversation",{
+          const response = await axios.post("./api/conversation",{
             message : newMessage,
           });
           setMessage((current) => [...current, userMessage , response.data]);

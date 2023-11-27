@@ -1,17 +1,13 @@
-import {Configuration , OpenAIApi} from "openai";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
-
-const configuration = new Configuration({
+import OpenAI from "openai";
+const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
-    basePath: "https://api.openai.com/v1",
+    dangerouslyAllowBrowser: true,
   });
-  
-const openai = new OpenAIApi(configuration);
-  
 
-export default async function POST(
-    req: Request,
+export  async function POST(
+   req:Request,
 ) {
     try{
         const { userId } = auth();
@@ -28,7 +24,7 @@ export default async function POST(
             return new NextResponse("API Key is corrupted", {status: 400});
         } 
 
-        const response = await openai.createChatCompletion({
+        const response = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
               {
@@ -39,8 +35,9 @@ export default async function POST(
             temperature: 0.9,
           });
 
-          return NextResponse.json(response.data.choices[0]);
+          return NextResponse.json(response.choices[0]);
     }catch (error) {
         console.log("[CONSERSATION]",error);
+        return new NextResponse("Internal Server Error", { status: 500 });
     }
 }
