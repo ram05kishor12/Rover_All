@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { formSchema } from "./constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { Loader } from "@/components/loader";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import OpenAi from "openai";
+import { Empty } from "@/components/empty";
 
 const ConversationPage = () => { 
     const [message, setMessage] = useState<OpenAi.ChatCompletionMessage[]>([]);
@@ -83,6 +84,14 @@ const ConversationPage = () => {
                     </Form>  
                 </div>
                 <div className="space-y-4 mt-4 font-bold">
+                 {isLoading && (
+                      <div className="p-8 rounded-lg w-full flex items-center justify-center bg-sky-100">
+                        <Loader />
+                        </div>
+                    )}
+                    { message.length === 0 && !isLoading && (
+                        <Empty label = "No messages yet" />
+                        )}
                  <div className="flex flex-col gap-y-4">
                     {message.map((message) => (
                         <div key={message.content}>
