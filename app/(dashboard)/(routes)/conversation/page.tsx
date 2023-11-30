@@ -80,7 +80,7 @@ const ConversationPage = () => {
                                     </FormItem>
                                 )}
                             />
-                            <Button className="col-span-12 lg:col-span-3 lg:col-start-10" disabled={isLoading}>
+                            <Button className="col-span-12 lg:col-span-3 lg:col-start-10 mt-3" disabled={isLoading}>
                                 Generate
                             </Button>
                         </form>
