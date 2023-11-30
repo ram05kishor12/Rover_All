@@ -1,8 +1,8 @@
 
 "use client";
 import { Heading } from "@/components/Heading";
-import { MessageSquare } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { ImageIcon } from "lucide-react";
+import { set, useForm } from "react-hook-form";
 import * as z from "zod";
 import { formSchema } from "./constants";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,30 +20,26 @@ import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/user-avatar";
 import { BotAvatar } from "@/components/ui/bot-avatar";
 
-const ConversationPage = () => { 
+const ImagePage = () => { 
     
-    const [message, setMessage] = useState<OpenAi.ChatCompletionMessage[]>([]);
+    const [images, setImages] = useState<String[]>([]);
     const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            prompt: ""
+            prompt: "",
+            amount: "1",
+            resolution: "512x512",
         }
     });
     const isLoading = form.formState.isSubmitting;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try{
-          const userMessage :OpenAi.ChatCompletionMessageParam[]= [{
-            role : "user",
-            content : values.prompt,
-          }];
-          const newMessage = [...message, userMessage];
-
-          const response = await axios.post("./api/conversation",{
-            message : newMessage,
-          });
-          setMessage((current) => [...current, userMessage , response.data]);
+          setImages([]);
+          const response = await axios.post("./api/image", values);
+          const urls = response.data.map((image:{url:string}) => image.url);
+          setImages(urls);
           form.reset();
         }catch(error:any){
             console.log(error);
@@ -54,11 +50,11 @@ const ConversationPage = () => {
     return (
         <div>
             <Heading
-                title="Conversation"
-                description="Our Conversation Model"
-                icon={MessageSquare}
-                iconColor="text-violet-500"
-                bgColor="bg-violet-500/10"
+                title="Image Generator"
+                description="Turn your text into an image"
+                icon={ImageIcon}
+                iconColor="text-pink-600"
+                bgColor="bg-pink-800/10"
             />
             <div className="px-4 lg:px-8">
                 <div>
@@ -96,23 +92,11 @@ const ConversationPage = () => {
                         <Loader />
                         </div>
                     )}
-                    { message.length === 0 && !isLoading && (
-                        <Empty label = "No messages yet" />
+                    { images.length === 0 && !isLoading && (
+                        <Empty label = "No images yet" />
                         )}
                  <div className="flex flex-col gap-y-4">
-                    {message.map((message) => (
-                        <div
-                          key={message.content}
-                          className={cn("p-8 w-full flex items-center gap-x-8 rounded-lg",
-                          message.role === "assistant" ? "bg-muted":"bg-white border border-black/10"
-                        )}
-                        >
-                            {message.role === "assistant" ? <BotAvatar/> : <UserAvatar/>}
-                            <p className="text-sm">
-                            {message.content}
-                            </p>
-                        </div>
-                    ))}
+                    Images will be displayed here
                 </div>
             </div>
             </div>
@@ -120,4 +104,4 @@ const ConversationPage = () => {
         </div>
     )  
 }
-export default ConversationPage;
+export default ImagePage;

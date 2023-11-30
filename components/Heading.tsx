@@ -20,7 +20,7 @@ export const Heading = ({
 }: HeadingProps) => {
     return (
       <div className="px-4 lg:px-8 flex items-center gap-x-3 mb-8">
-       <div className={cn("p-2 w-fit rounded-md,bgColor")}>
+       <div className={cn("p-2 w-fit rounded-md",bgColor)}>
         <Icon className={cn("h-10 w-10 rounded-md", iconColor)} />
       </div>
       <div>

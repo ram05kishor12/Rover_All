@@ -1,7 +1,7 @@
 
 "use client";
 import { Heading } from "@/components/Heading";
-import { MessageSquare } from "lucide-react";
+import { Code } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { formSchema } from "./constants";
@@ -15,12 +15,12 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import OpenAi from "openai";
 import { Empty } from "@/components/empty";
-import  ChatComponent from "@/components/ChatComponent";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/user-avatar";
 import { BotAvatar } from "@/components/ui/bot-avatar";
+import ReactMarkdown from "react-markdown";
 
-const ConversationPage = () => { 
+const CodeGenerationPage = () => { 
     
     const [message, setMessage] = useState<OpenAi.ChatCompletionMessage[]>([]);
     const router = useRouter();
@@ -40,7 +40,7 @@ const ConversationPage = () => {
           }];
           const newMessage = [...message, userMessage];
 
-          const response = await axios.post("./api/conversation",{
+          const response = await axios.post("./api/code",{
             message : newMessage,
           });
           setMessage((current) => [...current, userMessage , response.data]);
@@ -54,11 +54,11 @@ const ConversationPage = () => {
     return (
         <div>
             <Heading
-                title="Conversation"
-                description="Our Conversation Model"
-                icon={MessageSquare}
-                iconColor="text-violet-500"
-                bgColor="bg-violet-500/10"
+                title="Code Generator"
+                description="Our Code Generator Model"
+                icon={Code}
+                iconColor="text-gray-500"
+                bgColor="bg-gray-500/10"
             />
             <div className="px-4 lg:px-8">
                 <div>
@@ -76,7 +76,7 @@ const ConversationPage = () => {
                                                 {...field}
                                                 className="outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-transparent  w-full bg-transparent  onClick:outline-hidden onClick:ring-transparent font-medium text-md border-1 border-gray-300 shadow-md"
                                                 disabled={isLoading}
-                                                placeholder="Enter your prompt"
+                                                placeholder="Enter your prompt to get your code "
                                             />
                                         </FormControl>
                                     </FormItem>
@@ -109,7 +109,22 @@ const ConversationPage = () => {
                         >
                             {message.role === "assistant" ? <BotAvatar/> : <UserAvatar/>}
                             <p className="text-sm">
-                            {message.content}
+                            <ReactMarkdown
+                             components={{
+                                pre: ({node, ...props}) => (
+                                    <div className="overflow-auto w-full my-2 bg-black/10 rounded-lg">
+                                        <pre {...props}/>
+                                    </div>
+                                ),
+                                code: ({node, ...props}) => (
+                                    <code className= "bg-black/10 rounded-lg p-1" {...props}/>
+                                )
+                             }}
+                              className="text-sm overflow-hidden leading-7"
+                            
+                            >
+                              {message.content || ""}
+                            </ReactMarkdown>
                             </p>
                         </div>
                     ))}
@@ -120,4 +135,4 @@ const ConversationPage = () => {
         </div>
     )  
 }
-export default ConversationPage;
+export default CodeGenerationPage;
