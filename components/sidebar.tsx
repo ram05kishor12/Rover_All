@@ -98,7 +98,7 @@ const Sidebar = () => {
                                 'group flex items-center py-2 px-3 rounded-md transition duration-300 ease-in-out',
                                 `bg-${hoveredLink === route.href || pathname === route.href ? 'bg-gray-800' : 'transparent'}`,
                                 `text-${hoveredLink === route.href || pathname === route.href ? 'blue-400' : 'black'}`, // Changed 'white' to 'black'
-                                'hover:bg-gray-800 hover:text-sky-400',
+                                'hover:bg-black hover:text-white',
                             )}
                             onMouseEnter={() => setHoveredLink(route.href)}
                             onMouseLeave={() => setHoveredLink(null)} // Ensure null is passed here for the 'null' type in state
