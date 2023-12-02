@@ -30,15 +30,13 @@ export  async function POST(
         } 
 
         const response = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            messages: [
-              {
-                role: "user",
-                content : [instruction, ...message],
-              },
-            ],
-            temperature: 0.9,
-          });
+          model: "gpt-3.5-turbo",
+          messages: [
+            {"role": "system", "content": "you are a code generator chatbot assistant"},
+            ...message[0]
+          ],
+          temperature: 0.9,
+        });
 
           return NextResponse.json(response.choices[0]);
     }catch (error) {
