@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
 import OpenAI from "openai";
+import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
     dangerouslyAllowBrowser: true,
@@ -14,11 +15,6 @@ export  async function POST(
         const body = await req.json();
         const { message } = body;
 
-      console.log("here is the message: ", [
-        { "role": "system", "content": "you are a regular chatbot assistant" },
-        ...message
-      ],)
-
         if(!userId){
             return new NextResponse("Unauthorized", {status: 401});
         }
@@ -30,20 +26,17 @@ export  async function POST(
         } 
 
         const response = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            messages: [
-              {"role": "system", "content": "you are a regular chatbot assistant"},
-              ...message
-            ],
-            temperature: 0.9,
-          });
-
-          console.log("Here is the response: ", response)
+          model: "gpt-3.5-turbo",
+          messages: [
+            {"role": "system", "content": "you are a code generator chatbot assistant"},
+            ...message[0]
+          ],
+          temperature: 1,
+        });
 
           return NextResponse.json(response.choices[0]);
-          // return NextResponse.json({})
     }catch (error) {
-        console.log("[CONSERSATION]",error);
+        console.log("[CODE_ERROR]",error);
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }

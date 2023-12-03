@@ -10,7 +10,7 @@ import { Loader } from "@/components/loader";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import OpenAi from "openai";
@@ -19,12 +19,13 @@ import  ChatComponent from "@/components/ChatComponent";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/user-avatar";
 import { BotAvatar } from "@/components/ui/bot-avatar";
-
-const ConversationPage = () => { 
+import { useRef } from "react";
+const ConversationPage:React.FC = () => { 
     
     const [message, setMessage] = useState<OpenAi.ChatCompletionMessage[]>([]);
     const router = useRouter();
-
+    const messageContainerRef = useRef<HTMLDivElement>(null);
+    
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -34,16 +35,16 @@ const ConversationPage = () => {
     const isLoading = form.formState.isSubmitting;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try{
-          const userMessage :OpenAi.ChatCompletionMessageParam[]= [{
+          const userMessage :OpenAi.ChatCompletionMessageParam= {
             role : "user",
             content : values.prompt,
-          }];
+          };
           const newMessage = [...message, userMessage];
 
           const response = await axios.post("./api/conversation",{
             message : newMessage,
           });
-          setMessage((current) => [...current, userMessage , response.data]);
+          setMessage((current) => { console.log(current); return [...current, userMessage , response.data.message]});
           form.reset();
         }catch(error:any){
             console.log(error);
@@ -51,6 +52,17 @@ const ConversationPage = () => {
             router.refresh();
         }
     };
+    const scrollToBottom = () => {
+        messageContainerRef.current?.scrollTo({
+            behavior: "smooth",
+            top: messageContainerRef.current?.scrollHeight,
+        });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [message]);
+
     return (
         <div>
             <Heading
@@ -71,7 +83,7 @@ const ConversationPage = () => {
                                 name="prompt"
                                 render={({ field }) => (
                                     <FormItem className="col-span-12 lg:col-span-9">
-                                        <FormControl className="m-0 p-5">
+                                        <FormControl className=" p-5">
                                             <Input
                                                 {...field}
                                                 className="outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-transparent  w-full bg-transparent  onClick:outline-hidden onClick:ring-transparent font-medium text-md border-1 border-gray-300 shadow-md"
@@ -99,12 +111,12 @@ const ConversationPage = () => {
                     { message.length === 0 && !isLoading && (
                         <Empty label = "No messages yet" />
                         )}
-                 <div className="flex flex-col gap-y-4">
+                 <div className="overflow-y-auto max-h-96 space-y-3 p-2" ref={messageContainerRef}>
                     {message.map((message) => (
                         <div
                           key={message.content}
                           className={cn("p-8 w-full flex items-center gap-x-8 rounded-lg",
-                          message.role === "assistant" ? "bg-muted":"bg-white border border-black/10"
+                          message.role === "assistant" ? "bg-slate-200 shadow-lg":"bg-[#edf4fc]"
                         )}
                         >
                             {message.role === "assistant" ? <BotAvatar/> : <UserAvatar/>}

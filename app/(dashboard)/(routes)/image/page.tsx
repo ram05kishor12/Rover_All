@@ -25,7 +25,7 @@ import  Image  from "next/image";
 
 import next from "next";
 const ImagePage = () => {
-    const [images, setImages] = useState<String[]>([]);
+    const [images, setImages] = useState<string[]>(["https://oaidalleapiprodscus.blob.core.windows.net/private/org-Yy6IEYurGL0Imc7ARranIWtg/user-QbnGSomhuiguR03hl7pRXlRy/img-Iiu5cQR59nwZr09di5bCr6eH.png?st=2023-12-03T12%3A14%3A10Z&se=2023-12-03T14%3A14%3A10Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-12-03T05%3A19%3A13Z&ske=2023-12-04T05%3A19%3A13Z&sks=b&skv=2021-08-06&sig=X3qztIPWyOowoGu7Cp5gQaCn%2BwJy8ue/aEHWPZhV8y0%3D%22"]);
     const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -33,7 +33,7 @@ const ImagePage = () => {
         defaultValues: {
             prompt: "",
             amount: "1",
-            resolution: "512x512",
+            resolution: "256x256",
         }
     });
 
@@ -163,9 +163,11 @@ const ImagePage = () => {
                             >
                                 <div className="relative ascpect-square">
                                    <Image
+                                        height={512}
+                                        width={512}
                                       alt="generated image"
-                                      layout="fill"
-                                      src={String(src)}
+                                    //   layout="fill"
+                                      src={src}
                                 />
                                 </div>
                                 <CardFooter className="p-2"> 

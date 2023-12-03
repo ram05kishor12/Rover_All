@@ -1,16 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
 import OpenAI from "openai";
-import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
     dangerouslyAllowBrowser: true,
   });
 
-const instruction : ChatCompletionMessageParam = {
-    role: "system",
-    content: "You are a code generator. You must answer only in markdown code snippets. Use code comments to explain",
-  };
 export  async function POST(
    req:Request,
 ) {
@@ -18,6 +13,11 @@ export  async function POST(
         const { userId } = auth();
         const body = await req.json();
         const { message } = body;
+
+      console.log("here is the message: ", [
+        { "role": "system", "content": "you are a code generator chatbot assistant u need to reply only for code related assistance" },
+        ...message
+      ],)
 
         if(!userId){
             return new NextResponse("Unauthorized", {status: 401});
@@ -30,17 +30,20 @@ export  async function POST(
         } 
 
         const response = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo",
-          messages: [
-            {"role": "system", "content": "you are a code generator chatbot assistant"},
-            ...message[0]
-          ],
-          temperature: 0.9,
-        });
+            model: "gpt-3.5-turbo",
+            messages: [
+              {"role": "system", "content": "you are a code generator chatbot assistant u shoukd not rply for any other stuff except codes if they ask for that u can say sorry for the inconvenience im specifically designed for code generation u may try conversation page for regular chat"},
+              ...message
+            ],
+            temperature: 0.9,
+          });
+
+          console.log("Here is the response: ", response)
 
           return NextResponse.json(response.choices[0]);
+          // return NextResponse.json({})
     }catch (error) {
-        console.log("[CODE_ERROR]",error);
+        console.log("[CONSERSATION]",error);
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }

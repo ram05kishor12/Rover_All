@@ -20,13 +20,13 @@ export const LandingNavBar = () => {
               <div className="relative h-8 w-8 mr-4">
                     <Image src="/logi.png" layout="fill " alt="logo" width={100} height={150}/>
                 </div>
-              <h1 className={cn("text-2xl font-bold text-white", font.className)}>
+              <h1 className={cn("text-2xl font-bold text-blank", font.className)}>
                     Rover
                 </h1>
             </Link>
             <div className="flex items-center gap-x-2">
                 <Link href={isSignedIn ? "/dashboard" : "/sign-up"}>
-                    <Button variant = "outline" className="rounded-full">
+                    <Button variant = "default" className="rounded-full mt-2">
                         Get Started
                     </Button>
                 </Link>

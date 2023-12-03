@@ -1,7 +1,7 @@
-"use client";
+"use client"
 import { Heading } from "@/components/Heading";
 import { Mic } from "lucide-react";
-import {  set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { formSchema } from "./constants";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,21 +10,17 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import axios from "axios";
-import OpenAi from "openai";
 import { Empty } from "@/components/empty";
-import { cn } from "@/lib/utils";
-import { Select, SelectTrigger, SelectValue, SelectItem,SelectContent } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectValue, SelectItem, SelectContent } from "@/components/ui/select";
 import { voice } from "./constants";
 import { Card, CardFooter } from "@/components/ui/card";
-import  Image  from "next/image";
+import Image from "next/image";
 
 const TtsPage = () => {
-
-    const router = useRouter();
     const [input, setInput] = useState("");
-    const[generatedaudio,setGeneratedAudio]=useState("");
+    const [generatedAudio, setGeneratedAudio] = useState("");
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -34,25 +30,22 @@ const TtsPage = () => {
     });
 
     const isLoading = form.formState.isSubmitting;
-    
+
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-           const response = await axios.post("/api/tts", {
-           
+            const response = await axios.post("/api/tts", {
                 prompt: values.prompt,
                 voice: values.voice,
-            
-        }); 
-            const blob = new Blob([await response.data], { type: "audio/mp3" });
-            const url = URL.createObjectURL(blob);
-            setGeneratedAudio(url);
-            setInput(''); 
+            });
+            if (response.data && response.data.url) {
+                setGeneratedAudio(response.data.url);
+                setInput('');
+            }
         } catch (error: any) {
             console.log(error);
-        } finally {
-            router.refresh();
         }
     };
+
 
     return (
         <div>
@@ -126,14 +119,19 @@ const TtsPage = () => {
                             <Loader />
                         </div>
                     )}
-                    {!generatedaudio && !isLoading && (
+                    {!generatedAudio && !isLoading && (
                         <Empty label="No audio yet" />
                     )}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-8">
-                        <audio controls> 
-                            <source src={generatedaudio} type="audio/mp3" />
+                {generatedAudio && (
+                    <div>
+                        <audio controls>
+                            <source src={generatedAudio} type="audio/mp3" />
                         </audio>
+                        <a href={generatedAudio} download="generated_audio.mp3">Download</a>
                     </div>
+                )}
+            </div>
                 </div>
             </div>
 

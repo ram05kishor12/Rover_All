@@ -12,7 +12,7 @@ export  async function POST(
     try{
         const { userId } = auth();
         const body = await req.json();
-        const { prompt, amount =1 ,resolution="256x256" } = body;
+        const { prompt, amount =1 ,resolution="512x512" } = body;
 
       
 
@@ -34,7 +34,7 @@ export  async function POST(
         } 
 
         const response = await openai.images.generate({
-            model: "dalle-e-3",
+            model: "dall-e-2",
             prompt: prompt,
             n: parseInt(amount),
             size: resolution,
