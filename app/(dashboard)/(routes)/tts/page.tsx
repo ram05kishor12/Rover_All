@@ -1,7 +1,7 @@
 "use client";
 import { Heading } from "@/components/Heading";
 import { Mic } from "lucide-react";
-import {  useForm } from "react-hook-form";
+import {  set, useForm } from "react-hook-form";
 import * as z from "zod";
 import { formSchema } from "./constants";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +23,8 @@ import  Image  from "next/image";
 const TtsPage = () => {
 
     const router = useRouter();
-    const[generatedaudio,setGeneratedAudio]=useState<string>("");
+    const [input, setInput] = useState("");
+    const[generatedaudio,setGeneratedAudio]=useState("");
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -37,15 +38,15 @@ const TtsPage = () => {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
            const response = await axios.post("/api/tts", {
-                headers:{
-                    "Content-Type": "application/json",
-                },
-                body:JSON.stringify({
+           
                 prompt: values.prompt,
                 voice: values.voice,
-            })
-        });
-            setGeneratedAudio(response.data.audio); 
+            
+        }); 
+            const blob = new Blob([await response.data], { type: "audio/mp3" });
+            const url = URL.createObjectURL(blob);
+            setGeneratedAudio(url);
+            setInput(''); 
         } catch (error: any) {
             console.log(error);
         } finally {
@@ -111,7 +112,7 @@ const TtsPage = () => {
                                     </FormItem>
                                 )}
                             />
-                            <Button className="col-span-12 lg:col-span-6 lg:col-start-11 mt-3" disabled={isLoading}>
+                            <Button type="submit" className="col-span-12 lg:col-span-6 lg:col-start-11 mt-3" disabled={isLoading}>
                                 Generate
                             </Button>
                         </form>
