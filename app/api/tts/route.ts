@@ -1,38 +1,37 @@
-import { NextApiResponse, NextApiRequest } from "next";
-import OpenAI from "openai";
+// pages/api/tts.ts
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
+import OpenAI from 'openai';
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
-
-export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse
-) {
-    try {
-        const { prompt, voice = "alloy" } = req.body;
-
-        if (!prompt) {
-            return res.status(400).json({ message: "Prompt is required" });
+export async function ttsHandler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method === 'POST') {
+        // Handle the POST method logic here
+        const { prompt, voice } = req.body;
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        try {
+            const response = await openai.audio.speech.create({
+                model: 'tts-1',
+                voice,
+                input: prompt,
+            });
+            const blob = new Blob([await response.arrayBuffer()], { type: 'audio/mpeg' });
+            const url = URL.createObjectURL(blob);
+            return res.status(200).json({ url }); // Return the generated speech URL
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Internal Server Error' }); // Handle error and return an object with a proper URL field
         }
-        if (!voice) {
-            return res.status(400).json({ message: "Voice is required" });
-        }
-        if (!process.env.OPENAI_API_KEY) {
-            return res.status(400).json({ message: "API Key is corrupted" });
-        }
+    } else {
+        res.status(405).end(); // Method Not Allowed for other methods
+    }
+}
 
-        const response = await openai.audio.speech.create({
-            model: "tts-1",
-            input: prompt,
-            voice: voice,
-        });
-
-        console.log("Here is the response: ", response);
-
-        return res.json({ url: response.url });
-    } catch (error) {
-        console.log("[TTS]", error);
-        return res.status(500).json({ message: "Internal Server Error" });
+export async function getHandler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method === 'GET') {
+        // Handle the GET method logic here
+        // Example: Return a message for GET requests
+        return res.status(200).json({ message: 'GET request received' });
+    } else {
+        res.status(405).end(); // Method Not Allowed for other methods
     }
 }

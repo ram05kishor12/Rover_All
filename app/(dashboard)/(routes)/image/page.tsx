@@ -25,7 +25,8 @@ import  Image  from "next/image";
 
 import next from "next";
 const ImagePage = () => {
-    const [images, setImages] = useState<string[]>(["https://oaidalleapiprodscus.blob.core.windows.net/private/org-Yy6IEYurGL0Imc7ARranIWtg/user-QbnGSomhuiguR03hl7pRXlRy/img-Iiu5cQR59nwZr09di5bCr6eH.png?st=2023-12-03T12%3A14%3A10Z&se=2023-12-03T14%3A14%3A10Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-12-03T05%3A19%3A13Z&ske=2023-12-04T05%3A19%3A13Z&sks=b&skv=2021-08-06&sig=X3qztIPWyOowoGu7Cp5gQaCn%2BwJy8ue/aEHWPZhV8y0%3D%22"]);
+    const [images, setImages] = useState<string[]>([]);
+    const [model, setModel] = useState<string>("dalle2");
     const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -42,19 +43,37 @@ const ImagePage = () => {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             setImages([]);
-            const response = await axios.post("./api/image", values);
-            const urls = response.data.map((image: { url: string }) => image.url);
-            setImages(urls);
+            if (model === "dalle2") {
+                const response = await axios.post("./api/image", values); // Call for DALL·E 2 model
+                const urls = response.data.map((image: { url: string }) => image.url);
+                setImages(urls);
+            } else if (model === "dalle3") {
+                if (values.resolution != "1024x1024") {
+                    alert("DALL·E 3 only processes images at 1024x1024 resolution.");
+                    return; // Stop execution if resolution is not 1024x1024
+                }
+                const response = await axios.post("./api/iage", values); // Call for DALL·E 3 model
+                const urls = response.data.map((image: { url: string }) => image.url);
+                setImages(urls);
+
+            }
             form.reset();
+            
         } catch (error: any) {
             console.log(error);
         } finally {
             router.refresh();
         }
     };
+    const handleModelSwitch = (selectedModel: string) => {
+        setModel(selectedModel);
+        setImages([]); // Reset images when switching models
+        form.reset(); // Reset form values when switching models
+    };
 
     return (
         <div>
+            
             <Heading
                 title="Image Generator"
                 description="Turn your text into an image"
@@ -62,6 +81,25 @@ const ImagePage = () => {
                 iconColor="text-pink-600"
                 bgColor="bg-pink-800/10"
             />
+            <div className="flex justify-center space-x-4 mt-4">
+                <button
+                    onClick={() => handleModelSwitch("dalle2")}
+                    className={`${
+                        model === "dalle2" ? "bg-black text-white" : "bg-gray-300 text-gray-700"
+                    } px-4 py-2 rounded-md`}
+                >
+                    DALL·E 2
+                </button>
+                <button
+                    onClick={() => handleModelSwitch("dalle3")}
+                    className={`${
+                        model === "dalle3" ? "bg-black text-white" : "bg-gray-300 text-gray-700"
+                    } px-4 py-2 rounded-md`}
+                >
+                    DALL·E 3
+                </button>
+            </div>
+
             <div className="px-4 lg:px-8">
                 <div>
                     <Form {...form}>
@@ -163,10 +201,10 @@ const ImagePage = () => {
                             >
                                 <div className="relative ascpect-square">
                                    <Image
+                                        unoptimized
                                         height={512}
                                         width={512}
-                                      alt="generated image"
-                                    //   layout="fill"
+                                        alt="generated image"
                                       src={src}
                                 />
                                 </div>

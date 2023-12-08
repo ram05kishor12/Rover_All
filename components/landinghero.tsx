@@ -22,8 +22,6 @@ export const LandingHero = () => {
                   "Text-to-Speech", 
                   "Photo Generation", 
                   "Assistant", 
-                  "Music Generation", 
-                  "VedioGeneration",
             ],
             autoStart: true,
             loop: true,

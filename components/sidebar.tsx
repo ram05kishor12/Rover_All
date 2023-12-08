@@ -57,18 +57,6 @@ const routes: Route[] = [
         color: "text-pink-500",
     },
     {
-        label: "Video Generator",
-        icon: VideoIcon,
-        href: "/vedio",
-        color: "text-orange-500",
-    },
-    {
-        label: "Music Generator",
-        icon: MusicIcon,
-        href: "/music",
-        color: "text-emerald-500",
-    },
-    {
         label: "Settings",
         icon: Settings,
         href: "/settings",

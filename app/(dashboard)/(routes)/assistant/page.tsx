@@ -1,4 +1,4 @@
-const TTSPage = () => {
+const AssistantPage = () => {
     return (
         <div className="flex flex-col items-center justify-center py-60">
             <main className="flex flex-col items-center justify-center flex-1 text-center">
@@ -10,5 +10,5 @@ const TTSPage = () => {
     );
 };
 
-export default TTSPage;
+export default AssistantPage;
 

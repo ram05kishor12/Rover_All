@@ -31,19 +31,10 @@ const features: Feature[] = [
   },
   {
     title: "Assistant",
-    description: "Get help with your daily tasks.",
+    description: "Get help with your daily tasks & Summarzie uploaad files and much more.",
     icon: <Bot />,
   },
-  {
-    title: "Music Generation",
-    description: "Generate music with our AI.",
-    icon: <Music />,
-  },
-  {
-    title: "Video Generation",
-    description: "Elevate your storytelling with AI-powered video creation. Craft captivating narratives and bring ideas to life through dynamic, professionally rendered videos.",
-    icon: <Video />,
-  },
+  
   // Add more features here if needed
 ];
 

@@ -15,7 +15,7 @@ export  async function POST(
         const { message } = body;
 
       console.log("here is the message: ", [
-        { "role": "system", "content": "you are a code generator chatbot assistant u need to reply only for code related assistance" },
+        { "role": "system", "content": "you are a code generator  assistant u need to reply only for code related assistance" },
         ...message
       ],)
 

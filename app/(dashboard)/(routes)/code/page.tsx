@@ -128,12 +128,12 @@ const CodePage = () => {
                                     <ReactMarkdown
                                         components={{
                                             pre: ({ node, ...props }) => (
-                                                <div className="overflow-auto w-full my-2 bg-black/10 rounded-lg">
+                                                <div className="overflow-auto w-full my-2 bg-black rounded-lg p-2 text-white">
                                                     <pre {...props} />
                                                 </div>
                                             ),
                                             code: ({ node, ...props }) => (
-                                                <code className="bg-black/10 rounded-lg p-1" {...props} />
+                                                <code className="bg-black rounded-lg p-1 text-white " {...props} />
                                             ),
                                         }}
                                         className="text-sm overflow-hidden leading-7"
